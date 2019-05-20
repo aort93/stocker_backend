@@ -6,7 +6,13 @@ class CompaniesController < ApplicationController
   end
 
   def show
-    @company = User.find(params[:id])
-    render json: @company
+    symbol = params[:id]
+    company = StockQuote::Stock.quote(symbol)
+    render json: company
+  end
+
+  def retrieve
+
+
   end
 end

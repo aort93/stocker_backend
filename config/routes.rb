@@ -9,4 +9,5 @@ Rails.application.routes.draw do
   get "/home_articles", to: "articles#retrieve"
   post "/login", to: "auth#login"
 	get "/auto_login", to: "auth#auto_login"
+  get "user/stock_val", to: "users#update_user_stock_val"
 end
