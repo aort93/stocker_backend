@@ -8,7 +8,13 @@ class CompaniesController < ApplicationController
   def show
     symbol = params[:id]
     company = StockQuote::Stock.quote(symbol)
-    render json: company
+    company_news = StockQuote::Stock.news(symbol)
+    logo = StockQuote::Stock.logo(symbol)
+    render json: {
+      company: company,
+      company_news: company_news,
+      logo: logo
+    }
   end
 
   def retrieve

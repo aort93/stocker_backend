@@ -2,6 +2,9 @@ require 'net/http'
 
 class ArticlesController < ApplicationController
 
+  def single_article
+    
+  end
 
   def retrieve
     articles_url = URI.parse('https://api.iextrading.com/1.0/stock/market/news/first/5')
