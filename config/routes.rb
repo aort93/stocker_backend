@@ -9,6 +9,9 @@ Rails.application.routes.draw do
   get "/home_articles", to: "articles#retrieve"
   post "/login", to: "auth#login"
 	get "/auto_login", to: "auth#auto_login"
-  get "user/stock_val", to: "users#update_user_stock_val"
-  get "article", to: "articles#single_article"
+  post "user/:id/stock_val/", to: "users#update_user_stock_val"
+  get "/article", to: "articles#single_article"
+
+  post "/purchase", to: "companies#buy_stocks"
+  # post "/portfolio_data", to: "users#portfolio"
 end

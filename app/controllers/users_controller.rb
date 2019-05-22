@@ -9,21 +9,26 @@ class UsersController < ApplicationController
     render json: @user
   end
 
+
+
   def update_user_stock_val
     total = 0
-    @user = User.find(3)
-    # byebug
-    @symbol = @user.purchased_stocks[0].company.symbol
+    @user = User.find(params[:id])
+    my_purchased_stocks = @user.purchased_stocks
 
-    #map over stock and add each val to total
-    @stock_total = StockQuote::Stock.quote(@symbol).latest_price
 
-    @current_cash = @user.cash_value - @stock_total
-    @buying_power = @user.cash_value + @stock_total
+    my_purchased_stocks.each do |stock|
+      stock_symbol = stock.company.symbol
+      total += StockQuote::Stock.quote(stock_symbol).latest_price
+    end
+
+    @current_cash = @user.cash_value
+    @buying_power = @user.cash_value + total
+
 
 
     render json: {
-      total_stock_investment: @stock_total,
+      total_stock_investment: total,
       current_cash: @current_cash,
       buying_power: @buying_power
     }
@@ -36,8 +41,8 @@ class UsersController < ApplicationController
       last_name: params[:last_name],
 			username: params[:username],
 			password: params[:password],
-			stocks_value: 100,
-			cash_value: 100
+			stocks_value: 0,
+			cash_value: params[:cash]
 		)
 
 		if user.save
