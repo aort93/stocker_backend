@@ -18,7 +18,7 @@ ActiveRecord::Schema.define(version: 2019_05_14_174958) do
   create_table "articles", force: :cascade do |t|
     t.string "headline"
     t.string "link_url"
-    t.string "date"
+    t.date "date"
     t.string "summary"
     t.string "img_url"
     t.integer "company_id"
@@ -29,12 +29,7 @@ ActiveRecord::Schema.define(version: 2019_05_14_174958) do
   create_table "companies", force: :cascade do |t|
     t.string "name"
     t.string "symbol"
-    t.string "bio"
-    t.string "ceo"
-    t.integer "founding_year"
-    t.integer "employee_count"
-    t.string "location"
-    t.integer "current_stock_price"
+    t.float "current_stock_price"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -42,8 +37,9 @@ ActiveRecord::Schema.define(version: 2019_05_14_174958) do
   create_table "purchased_stocks", force: :cascade do |t|
     t.integer "user_id"
     t.integer "company_id"
-    t.string "date_purchased"
-    t.integer "shares"
+    t.date "date_purchased"
+    t.float "shares"
+    t.float "curret_shares"
     t.integer "price"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -54,8 +50,8 @@ ActiveRecord::Schema.define(version: 2019_05_14_174958) do
     t.string "last_name"
     t.string "username"
     t.string "password_digest"
-    t.integer "stocks_value"
-    t.integer "cash_value"
+    t.float "stocks_value"
+    t.float "cash_value"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -63,6 +59,7 @@ ActiveRecord::Schema.define(version: 2019_05_14_174958) do
   create_table "watchlists", force: :cascade do |t|
     t.integer "user_id"
     t.integer "company_id"
+    t.float "price"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

@@ -3,9 +3,10 @@ class CreatePurchasedStocks < ActiveRecord::Migration[5.2]
     create_table :purchased_stocks do |t|
       t.integer :user_id
       t.integer :company_id
-      t.string :date_purchased
+      t.date :date_purchased
       t.integer :shares
-      t.integer :price
+      t.integer :curret_shares
+      t.float :price
 
       t.timestamps
     end

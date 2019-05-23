@@ -1,5 +1,5 @@
 class CompanySerializer < ActiveModel::Serializer
-  attributes :id, :name, :symbol, :bio, :ceo, :founding_year, :employee_count, :location, :current_stock_price, :retrieve_customers
+  attributes :id, :name, :symbol, :current_stock_price, :retrieve_customers
 
 
 

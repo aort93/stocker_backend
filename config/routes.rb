@@ -13,5 +13,6 @@ Rails.application.routes.draw do
   get "/article", to: "articles#single_article"
 
   post "/purchase", to: "companies#buy_stocks"
-  # post "/portfolio_data", to: "users#portfolio"
+  post "/sell", to: "companies#sell_stocks"
+
 end

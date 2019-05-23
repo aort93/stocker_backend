@@ -11,6 +11,8 @@ class UsersController < ApplicationController
 
 
 
+
+
   def update_user_stock_val
     total = 0
     @user = User.find(params[:id])
