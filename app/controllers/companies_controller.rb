@@ -20,68 +20,64 @@ class CompaniesController < ApplicationController
   def buy_stocks
     user = User.find(params[:userId])
     symbol = params[:symbol]
-    shares = params[:shares]
+    shares = params[:shares].to_i
     date = params[:date]
     quote = StockQuote::Stock.quote(symbol)
     company_info = StockQuote::Stock.company(symbol)
 
+    if user.cash_value > shares * quote.latest_price
+      company = Company.create(name: company_info.company_name, symbol: symbol, current_stock_price: quote.latest_price)
+
+      purch = PurchasedStock.create(user_id: user.id, company_id: company.id, shares: shares, price: quote.latest_price, date_purchased: date, curret_shares: shares )
+
+      user.update(cash_value: user.cash_value - purch.shares * purch.price, stocks_value: user.stocks_value + purch.shares * purch.price)
 
 
-    company = Company.create(name: company_info.company_name, symbol: symbol, current_stock_price: quote.latest_price)
-
-    purch = PurchasedStock.create(user_id: user.id, company_id: company.id, shares: shares, price: quote.latest_price, date_purchased: date, curret_shares: shares )
-
-    user.update(cash_value: user.cash_value - purch.shares * purch.price, stocks_value: user.stocks_value + purch.shares * purch.price)
-
-
-    render json: purch
+      render json: user
+    else
+      render json: {errors: "You don't have enough money for that!!!"}
+    end
   end
 
   def sell_stocks
     user = User.find(params[:userId])
     symbol = params[:symbol]
-    check = params[:shares].to_i
+    sell_amount = params[:shares].to_i
     shares = (params[:shares].to_i) * (-1)
-    # byebug
-
     date = params[:date]
-    current_shares = 0
     quote = StockQuote::Stock.quote(symbol)
     company_info = StockQuote::Stock.company(symbol)
 
-    count = 0
+    total_stocks = 0
 
-    # company = Company.create(name: company_info.company_name, symbol: symbol, current_stock_price: quote.latest_price)
-    #
-    # sold = PurchasedStock.create(user_id: user.id, company_id: company.id, shares: shares, price: quote.latest_price, date_purchased: date, curret_shares: current_shares)
+    company = Company.create(name: company_info.company_name, symbol: symbol, current_stock_price: quote.latest_price)
 
-
-
+    sold = PurchasedStock.create(user_id: user.id, company_id: company.id, shares: shares, price: quote.latest_price, date_purchased: date, curret_shares: 0.0)
 
     filtered_stock = user.purchased_stocks.filter do |stock|
       stock.company.symbol === symbol
     end
 
     filtered_stock.each do |stock|
-      count += stock.curret_shares
+      total_stocks += stock.curret_shares
     end
 
-    # byebug
+    if (sell_amount <= total_stocks)
+      filtered_stock.each do |stock|
+        if stock.curret_shares > 0 && sell_amount < stock.curret_shares
+          new_val = stock.curret_shares - sell_amount
+          stock.update(curret_shares: new_val)
+          sell_amount = 0
+        elsif stock.curret_shares > 0 && sell_amount >= stock.curret_shares
+          stock.update(curret_shares: 0)
+          sell_amount - stock.curret_shares
+        end
+      end
 
-    if (check <= count)
-      # filtered_stock.each do |stock|
-      #     if stock.curret_shares > 0 && params[:shares] < stock.curret_shares
-      #       new_val = stock.curret_shares - params[:shares]
-      #       stock.update(curret_shares: new_val)
-      #     end
-      # end
-
-      render json: {shares_size: count}
+      render json: user
     else
       render json: {errors: "You don't own that many stocks!"}
     end
-
-
   end
 
 
