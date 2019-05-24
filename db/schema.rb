@@ -38,9 +38,9 @@ ActiveRecord::Schema.define(version: 2019_05_14_174958) do
     t.integer "user_id"
     t.integer "company_id"
     t.date "date_purchased"
-    t.float "shares"
-    t.float "curret_shares"
-    t.integer "price"
+    t.integer "shares"
+    t.integer "current_shares"
+    t.float "price"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -52,6 +52,7 @@ ActiveRecord::Schema.define(version: 2019_05_14_174958) do
     t.string "password_digest"
     t.float "stocks_value"
     t.float "cash_value"
+    t.float "original_cash_value"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

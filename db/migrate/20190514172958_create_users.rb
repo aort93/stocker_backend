@@ -7,6 +7,7 @@ class CreateUsers < ActiveRecord::Migration[5.2]
       t.string :password_digest
       t.float :stocks_value
       t.float :cash_value
+      t.float :original_cash_value
 
       t.timestamps
     end

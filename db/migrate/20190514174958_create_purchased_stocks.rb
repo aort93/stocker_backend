@@ -5,7 +5,7 @@ class CreatePurchasedStocks < ActiveRecord::Migration[5.2]
       t.integer :company_id
       t.date :date_purchased
       t.integer :shares
-      t.integer :curret_shares
+      t.integer :current_shares
       t.float :price
 
       t.timestamps

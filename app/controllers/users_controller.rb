@@ -44,7 +44,8 @@ class UsersController < ApplicationController
 			username: params[:username],
 			password: params[:password],
 			stocks_value: 0,
-			cash_value: params[:cash]
+			cash_value: params[:cash],
+      original_cash_value: params[:cash]
 		)
 
 		if user.save

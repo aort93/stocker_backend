@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   post "/login", to: "auth#login"
 	get "/auto_login", to: "auth#auto_login"
   post "user/:id/stock_val/", to: "users#update_user_stock_val"
-  get "/article", to: "articles#single_article"
+  post "/article", to: "articles#single_article"
 
   post "/purchase", to: "companies#buy_stocks"
   post "/sell", to: "companies#sell_stocks"
