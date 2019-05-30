@@ -9,7 +9,7 @@ class AuthController < ApplicationController
       # render json: user
       render json: {user: UserSerializer.new(user), token: token}
     else
-      render json: {errors: "You dun goofed!"}
+      render json: {errors: "Incorrect username/password"}
     end
   end
 
