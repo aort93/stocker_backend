@@ -5,14 +5,16 @@ Rails.application.routes.draw do
   resources :articles
   resources :companies
   resources :purchased_stocks
+  resources :watchlists
 
   get "/home_articles", to: "articles#retrieve"
   post "/login", to: "auth#login"
 	get "/auto_login", to: "auth#auto_login"
-  post "user/:id/stock_val/", to: "users#update_user_stock_val"
   post "/article", to: "articles#single_article"
 
   post "/purchase", to: "companies#buy_stocks"
   post "/sell", to: "companies#sell_stocks"
+  post "/watch", to: "companies#watchlist"
+  post "/portfolio/", to: "companies#portfolio"
 
 end
