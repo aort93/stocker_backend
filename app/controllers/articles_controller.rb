@@ -2,13 +2,15 @@ require 'net/http'
 
 class ArticlesController < ApplicationController
   def retrieve
-    articles_url = URI.parse('https://api.iextrading.com/1.0/stock/market/news/first/5')
-    articles_codes = Net::HTTP.get_response(articles_url ).body
-    articles_codes_arr = JSON.parse(articles_codes)
+    # articles_url = URI.parse('https://api.iextrading.com/1.0/stock/market/news/first/5')
+    # articles_codes = Net::HTTP.get_response(articles_url ).body
+    # articles_codes_arr = JSON.parse(articles_codes)
 
     landing = []
+    news_arr = StockQuote::Stock.news("market").news
 
-    articles_codes_arr.map do |article|
+    news_arr.map do |article|
+      # byebug
       obj = {}
       obj['headline'] = article['headline']
       obj['image'] = article['image']

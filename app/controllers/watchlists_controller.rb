@@ -1,6 +1,5 @@
 class WatchListsController < ApplicationController
   def create
-    byebug
     @user = User.find(params[:id])
     symbol = params[:symbol]
     @company_info = StockQuote::Stock.company(symbol)
