@@ -11,7 +11,7 @@ gem 'pg', '>= 0.18', '< 2.0'
 gem 'puma', '~> 3.11'
 gem 'jwt'
 gem "stock_quote", '~> 2.0.0'
-
+gem 'iex-ruby-client'
 
 
 

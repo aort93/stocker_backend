@@ -10,33 +10,6 @@ class UsersController < ApplicationController
   end
 
 
-
-
-
-  def update_user_stock_val
-    total = 0
-    @user = User.find(params[:id])
-    my_purchased_stocks = @user.purchased_stocks
-
-
-    my_purchased_stocks.each do |stock|
-      stock_symbol = stock.company.symbol
-      total += StockQuote::Stock.quote(stock_symbol).latest_price
-    end
-
-    @current_cash = @user.cash_value
-    @buying_power = @user.cash_value + total
-
-
-
-    render json: {
-      total_stock_investment: total,
-      current_cash: @current_cash,
-      buying_power: @buying_power
-    }
-  end
-
-
   def create
 		user = User.new(
 			first_name: params[:first_name],

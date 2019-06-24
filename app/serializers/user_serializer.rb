@@ -1,3 +1,5 @@
+require 'net/http'
+
 class UserSerializer < ActiveModel::Serializer
 	attributes :id, :first_name, :last_name, :username, :stocks_value, :cash_value, :original_cash_value, :stocks, :watched_stocks, :array
 
@@ -23,7 +25,8 @@ class UserSerializer < ActiveModel::Serializer
 			stock.company.symbol.downcase
 		end.uniq
 
-		companies_url = URI.parse("https://api.iextrading.com/1.0/stock/market/batch?symbols=#{tickers.join(',')}&types=quote")
+		# companies_url = URI.parse("https://api.iextrading.com/1.0/stock/market/batch?symbols=#{tickers.join(',')}&types=quote")
+		companies_url = URI.parse("https://cloud.iexapis.com/stable/stock/market/batch?symbols=#{tickers.join(',')}&types=quote&token=pk_a8bb38e4ca7443d6a65134cd95b51606")
     companies_codes = Net::HTTP.get_response(companies_url).body
     companies_codes_arr = JSON.parse(companies_codes)
 
@@ -59,13 +62,21 @@ class UserSerializer < ActiveModel::Serializer
 
 
   def watched_stocks
+		def quote
+			articles_url = URI.parse("https://cloud.iexapis.com/stable/stock/aapl/quote/?token=pk_a8bb38e4ca7443d6a65134cd95b51606")
+	    articles_codes = Net::HTTP.get_response(articles_url).body
+	    articles_codes_arr = JSON.parse(articles_codes)
+		end
+
     self.object.watchlists.map do |w_stock|
       {
         id: w_stock.id,
         name: w_stock.company.name,
         symbol: w_stock.company.symbol,
-				curr_price: StockQuote::Stock.quote(w_stock.company.symbol).latest_price
+				curr_price: quote['latestPrice']
       }
     end
   end
+
+
 end

@@ -2,6 +2,7 @@ class WatchListsController < ApplicationController
   def create
     @user = User.find(params[:id])
     symbol = params[:symbol]
+
     @company_info = StockQuote::Stock.company(symbol)
     quote = StockQuote::Stock.quote(symbol)
 
