@@ -2,6 +2,9 @@ class ApplicationController < ActionController::API
   # helper_method :curr_user
 
 
+
+
+
   def encode_token(user_id)
     JWT.encode({user_id: user_id}, "12345")
   end
