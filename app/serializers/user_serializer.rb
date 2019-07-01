@@ -18,12 +18,13 @@ class UserSerializer < ActiveModel::Serializer
 
 	def array
 		transactions = self.object.purchased_stocks
+		byebug
 
 		tickers = transactions.map do |stock|
 			stock.company.symbol.downcase
 		end.uniq
 
-		companies_url = URI.parse("https://api.iextrading.com/1.0/stock/market/batch?symbols=#{tickers.join(',')}&types=quote")
+		companies_url = URI.parse("https://cloud.iexapis.com/stable/stock/market/batch?symbols=#{tickers.join(',')}&types=quote&token=pk_a8bb38e4ca7443d6a65134cd95b51606")
     companies_codes = Net::HTTP.get_response(companies_url).body
     companies_codes_arr = JSON.parse(companies_codes)
 
@@ -59,6 +60,7 @@ class UserSerializer < ActiveModel::Serializer
 
 
   def watched_stocks
+
     self.object.watchlists.map do |w_stock|
       {
         id: w_stock.id,

@@ -21,18 +21,30 @@ class CompaniesController < ApplicationController
 
   def show
     symbol = params[:id]
-    comany_info = StockQuote::Stock.company(symbol)
-    company = StockQuote::Stock.quote(symbol)
-    company_news = StockQuote::Stock.news(symbol)
-    logo = StockQuote::Stock.logo(symbol)
-    financials = StockQuote::Stock.financials(symbol)
+    company_url = URI.parse("https://cloud.iexapis.com/stable/stock/#{symbol}/company/?token=pk_a8bb38e4ca7443d6a65134cd95b51606")
+     company_codes = Net::HTTP.get_response(company_url).body
+     company_info = JSON.parse(company_codes)
+
+     quotes_url = URI.parse("https://cloud.iexapis.com/stable/stock/#{symbol}/quote/?token=pk_a8bb38e4ca7443d6a65134cd95b51606")
+     quotes_codes = Net::HTTP.get_response(quotes_url).body
+     company = JSON.parse(quotes_codes)
 
 
+     news_url = URI.parse("https://cloud.iexapis.com/stable/stock/#{symbol}/news/?token=pk_a8bb38e4ca7443d6a65134cd95b51606")
+     news_codes = Net::HTTP.get_response(news_url ).body
+     company_news = JSON.parse(news_codes)
+
+     logo_url = URI.parse("https://cloud.iexapis.com/stable/stock/#{symbol}/logo/?token=pk_a8bb38e4ca7443d6a65134cd95b51606")
+     logo_codes = Net::HTTP.get_response(logo_url ).body
+     logo = JSON.parse(logo_codes)
+
+     # financials_url = URI.parse("https://cloud.iexapis.com/stable/stock/#{symbol}/financials/?token=pk_a8bb38e4ca7443d6a65134cd95b51606")
+     # financials_codes = Net::HTTP.get_response(financials_url ).body
+     # financials = JSON.parse(financials_codes)
 
     render json: {
         company: company,
         company_news: company_news,
-        financials: financials,
         logo: logo
     }
   end
@@ -44,7 +56,7 @@ class CompaniesController < ApplicationController
       stock.company.symbol.downcase
     end.uniq
 
-    companies_url = URI.parse("https://api.iextrading.com/1.0/stock/market/batch?symbols=#{tickers.join(',')}&types=quote")
+    companies_url = URI.parse("https://cloud.iexapis.com/stable/stock/market/batch?symbols=#{tickers.join(',')}&types=quote&token=pk_a8bb38e4ca7443d6a65134cd95b51606")
     companies_codes = Net::HTTP.get_response(companies_url).body
     companies_codes_arr = JSON.parse(companies_codes)
 
@@ -83,17 +95,17 @@ class CompaniesController < ApplicationController
     symbol = params[:symbol]
     shares = params[:shares].to_i
     date = params[:date]
-    quote = StockQuote::Stock.quote(symbol)
-    company_info = StockQuote::Stock.company(symbol)
 
+    quotes_url = URI.parse("https://cloud.iexapis.com/stable/stock/#{symbol}/quote/?token=pk_a8bb38e4ca7443d6a65134cd95b51606")
+    quotes_codes = Net::HTTP.get_response(quotes_url).body
+    quote = JSON.parse(quotes_codes)
 
-    if user.cash_value > shares * quote.latest_price && shares > 0
-      company = Company.create(name: company_info.company_name, symbol: symbol, current_stock_price: quote.latest_price)
+    if user.cash_value > shares * quote["latestPrice"] && shares > 0
+      company = Company.create(name: quote["companyName"], symbol: symbol, current_stock_price: quote["latestPrice"])
 
-      purch = PurchasedStock.create(user_id: user.id, company_id: company.id, shares: shares, price: quote.latest_price, date_purchased: date, current_shares: shares )
+      purch = PurchasedStock.create(user_id: user.id, company_id: company.id, shares: shares, price: quote["latestPrice"], date_purchased: date, current_shares: shares )
 
       user.update(cash_value: user.cash_value - purch.shares * purch.price, stocks_value: user.stocks_value + purch.shares * purch.price)
-
 
       render json: user
     else
@@ -108,8 +120,10 @@ class CompaniesController < ApplicationController
     sell_amount = params[:shares].to_i
     shares = (params[:shares].to_i) * (-1)
     date = params[:date]
-    quote = StockQuote::Stock.quote(symbol)
-    company_info = StockQuote::Stock.company(symbol)
+
+    quotes_url = URI.parse("https://cloud.iexapis.com/stable/stock/#{symbol}/quote/?token=pk_a8bb38e4ca7443d6a65134cd95b51606")
+    quotes_codes = Net::HTTP.get_response(quotes_url).body
+    quote = JSON.parse(quotes_codes)
 
     total_stocks = 0
     sell_value = 0
@@ -129,20 +143,20 @@ class CompaniesController < ApplicationController
     exist = tickers.include?(symbol.downcase)
 
     if(exist && sell_amount <= total_stocks && sell_amount > 0)
-      company = Company.create(name: company_info.company_name, symbol: symbol, current_stock_price: quote.latest_price)
+      company = Company.create(name: quote['companyName'], symbol: symbol, current_stock_price: quote['latestPrice'])
 
-      sold = PurchasedStock.create(user_id: user.id, company_id: company.id, shares: shares, price: quote.latest_price, date_purchased: date, current_shares: 0.0)
+      sold = PurchasedStock.create(user_id: user.id, company_id: company.id, shares: shares, price: quote['latestPrice'], date_purchased: date, current_shares: 0.0)
 
       filtered_stock.each do |stock|
         if stock.current_shares > 0 && sell_amount < stock.current_shares
           new_val = stock.current_shares - sell_amount
           stock.update(current_shares: new_val)
-          user.update(cash_value: user.cash_value + (sell_amount * quote.latest_price), stocks_value: user.stocks_value - (sell_amount * quote.latest_price))
+          user.update(cash_value: user.cash_value + (sell_amount * quote['latestPrice']), stocks_value: user.stocks_value - (sell_amount * quote['latestPrice']))
           sell_amount = 0
         elsif stock.current_shares > 0 && sell_amount >= stock.current_shares
           stock.update(current_shares: 0)
           sell_amount - stock.current_shares
-          user.update(cash_value: user.cash_value + (sell_amount * quote.latest_price), stocks_value: user.stocks_value - (sell_amount * quote.latest_price))
+          user.update(cash_value: user.cash_value + (sell_amount * quote['latestPrice']), stocks_value: user.stocks_value - (sell_amount * quote['latestPrice']))
         end
       end
       new_user = User.find(params[:userId])
