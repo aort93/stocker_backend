@@ -18,7 +18,7 @@ class UserSerializer < ActiveModel::Serializer
 
 	def array
 		transactions = self.object.purchased_stocks
-		byebug
+
 
 		tickers = transactions.map do |stock|
 			stock.company.symbol.downcase
