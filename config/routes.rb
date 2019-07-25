@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   resources :articles
   resources :companies
   resources :purchased_stocks
-  resources :watchlists
+  # resources :watchlists
 
   get "/home_articles", to: "articles#retrieve"
   post "/login", to: "auth#login"
